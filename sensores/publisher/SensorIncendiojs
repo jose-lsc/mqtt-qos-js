@@ -1,0 +1,31 @@
+//Sensor para detecção de incêndio  
+
+import mqtt from "mqtt";
+
+const client = mqtt.connect("mqtt://localhost/1883");
+
+client.on("connect", ()=> {
+    console.log("Publisher - Sensor incêndiário: Conectado!");
+
+    let i = 0;
+    let msg = "";
+
+    const t = setInterval( () => {
+        
+        msg = "Níveis normais"; 
+         
+        if(i >= 5 && i < 10){
+            msg = "Fumaça detectada! " + i; 
+            console.log("Publisher(Qos2) - sensorReservatorio enviou: Fumaça detectada!", i);
+            client.publish("estufa/alerta/incendio", msg, {qos: 2});
+            
+        }else if(i > 10){
+            clearInterval(t);
+            client.end();
+        }
+            
+        i++;
+    }, 1000);
+
+});
+
