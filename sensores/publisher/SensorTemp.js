@@ -10,16 +10,32 @@ client.on("connect", ()=> {
     let i = 0;
 
     const t = setInterval( () => {
-        let msg = `Temperatura de ${20 * i} Cº`;
-        client.publish("estufa/temp/ambiente", msg, {qos: 0});
-        console.log("`Publisher(Qos0) - sensorTemp enviou:", msg);
+        
+
+        const msg = {
+            payload : {
+                valor: 20 * i,
+                local: "lab1",
+                unidade: "Celsius",
+                topic: "estufa/temp/ambiente"
+            }
+        }
+            
+
+        client.publish(
+            "estufa/temp/ambiente", 
+             JSON.stringify(msg.payload), 
+             {qos: 0}
+        );
+
+        console.log("Publisher(QoS0) - sensorTemp enviou:", msg.payload);
         i++;
 
         if (i === 10) {
             clearInterval(t);
             client.end();
         }
-    }, 5000);
+    }, 2000);
 
 });
 
